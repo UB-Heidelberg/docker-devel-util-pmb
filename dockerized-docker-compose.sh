@@ -140,8 +140,8 @@ function doco_fallible_actually_do_stuff () {
     "${D_EARLY_OPT[@]}"
     "$@"
     )
-  [ "$DBGLV" -lt 2 ] || echo "D: ${D_CMD[*]}" >&2
-  "${D_CMD[@]}" || return $?
+  [ "$DBGLV" -lt 2 ] || echo D: "${D_CMD[*]}" >&2
+  "${D_CMD[@]}" || return $?$(echo W: "failed (rv=$?) to ${D_CMD[*]}" >&2)
 }
 
 

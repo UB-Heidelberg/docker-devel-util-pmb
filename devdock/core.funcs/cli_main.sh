@@ -39,7 +39,7 @@ function devdock_cli_main () {
     up )
       if [ -f "$COMPOSE_FILE" ]; then
         echo D: "before 'up', 'down' potential old container:"
-        docompose down || return $?
+        docompose down || return $?$(echo E: "docompose failed, rv=$?" >&2)
       fi
       devdock_recompose || return $?$(
         echo E: "Flinching: Failed to recompose." >&2)
