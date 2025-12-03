@@ -17,8 +17,17 @@ function devdock_recompose__cleanup_and_lint_doco_section () {
     echo "E: Found lint in section $SECT_TRACE:" >&2
     echo "$LINT" >&2)
 
-  echo "  # >>> $SECT_TRACE >>>"
+  echo "  # >>> $SECT_TRACE >>> templated parts >>>"
   echo "$TEXT"
+  echo "  # >>> $SECT_TRACE >>> generic additions by DevDock >>>"
+
+  if ! grep -qPe '^\s+logging:\s*(#|$)' <(echo "$TEXT"); then
+    echo "    logging:"
+    echo "      driver: 'local'" \
+      '# `local` has safer default options than `json-file`,' \
+      'but consider configuring values tailored to your use case!'
+  fi
+
   echo "  # <<< $SECT_TRACE <<<"
 }
 

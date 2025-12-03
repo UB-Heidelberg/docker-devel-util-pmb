@@ -1,5 +1,5 @@
 { "name": "docker-devel-util-pmb",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Some docker utilities for software developers.",
   "keywords": [],
 
