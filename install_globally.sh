@@ -6,6 +6,12 @@ function install_globally () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
   local REPO_DIR="$(readlink -m -- "$BASH_SOURCE"/..)"
   cd -- "$REPO_DIR" || return $?
+  local QUOT='"' # help buggy syntax highlighters that end strings at EOL
+  local PKG_NAME='"name":\s*"[\w\-]+(?=")'
+  PKG_NAME="$(LANG=C grep -m 1 -oPe "$PKG_NAME" -- package.json |
+    head --lines=1 | # grep -m only limits lines matched, not total matches
+    cut -d "$QUOT" -sf 4)"
+  [ -n "$PKG_NAME" ] || return 4$(echo E: 'Cannot find package name!' >&2)
 
   if [ "$1" == --skip-mv ]; then
     shift
@@ -13,14 +19,12 @@ function install_globally () {
     echo "Taking ownership:"
     chown --recursive root:root . || return $?
 
-    local DN="$(basename -- "$REPO_DIR")"
-    local ULL="/usr/local/lib"
-    local ULD="$ULL/$DN"
-    echo -n "Move repo directory to $ULL: "
+    local ULD="/usr/local/lib/$PKG_NAME"
+    echo -n "Move repo directory to $ULD: "
     if [ "$REPO_DIR" -ef "$ULD" ]; then
       echo 'skip: no action required.'
     else
-      mv --target-directory="$ULL" -- "$REPO_DIR" || return $?
+      mv --no-target-directory -- "$REPO_DIR" "$ULD" || return $?
       echo 'done.'
     fi
 
@@ -43,7 +47,7 @@ function install_globally () {
   done <binlinks.cfg
 
   echo
-  echo "Ok! Seems like all is well and $DN should be ready for use."
+  echo "Ok! Seems like all is well and $PKG_NAME should be ready for use."
 }
 
 
